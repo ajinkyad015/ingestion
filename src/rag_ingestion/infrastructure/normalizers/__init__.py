@@ -33,4 +33,6 @@ Normalization should be deterministic so that identical source documents
 always produce identical normalized representations.
 """
 
-__all__: list[str] = []
+from rag_ingestion.infrastructure.normalizers.default import DefaultDocumentNormalizer
+
+__all__ = ["DefaultDocumentNormalizer"]

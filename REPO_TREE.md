@@ -10,7 +10,7 @@
 
 ## Last updated
 
-**Commit 4 — "Implement DoclingParser adapter"**  
+**Commit 5 — "Implement DefaultDocumentNormalizer adapter"**  
 Local time: 2026-08-01 · Python ≥ 3.12.13 · uv · hatchling
 
 ---
@@ -46,8 +46,8 @@ Constructor injection throughout; single composition root (`bootstrap.py`).
 
 ## Current progress
 
-- Core scaffolding exists: `config.py`, `logging.py`, `bootstrap.py`, the CLI entrypoint, the domain entities/protocols, the metadata enricher protocol, the filesystem loader, and the Docling parser adapter.
-- Implemented dependency chain so far: `Settings` → `FileSystemLoader` → `Document` → `DoclingParser` → `ParsedDocument`; `bootstrap()` resolves settings, configures logging, and returns `ApplicationContext`.
+- Core scaffolding exists: `config.py`, `logging.py`, `bootstrap.py`, the CLI entrypoint, the domain entities/protocols, the metadata enricher protocol, the filesystem loader, the Docling parser adapter, and the default document normalizer.
+- Implemented dependency chain so far: `Settings` → `FileSystemLoader` → `Document` → `DoclingParser` → `ParsedDocument` → `DefaultDocumentNormalizer` → `NormalizedDocument`; `bootstrap()` resolves settings, configures logging, and returns `ApplicationContext`.
 - `interface/cli/main.py` already depends on `bootstrap()` and can print the active configuration with `--config`.
 - Application services and orchestrators are still stubs, so future ingestion features still need normalizer, chunker, embedder, and vector store adapters before they can be wired end to end.
 - Existing tests currently anchor config, bootstrap, logging, domain entities/protocols, filesystem loader behavior, and the Docling parser adapter.
@@ -171,8 +171,9 @@ infrastructure/
 │                           #   implements Parser protocol, surfaces failures
 │                           #   as ValueError / RuntimeError with source path
 ├── normalizers/
-│   └── __init__.py         # Stub — planned: DefaultDocumentNormalizer
-│                           (whitespace, line endings, encoding artifacts)
+│   ├── __init__.py         # Exports DefaultDocumentNormalizer
+│   └── default.py          # DefaultDocumentNormalizer — normalizes whitespace,
+│                           #   line endings, encoding, and extracts sections
 ├── chunkers/
 │   └── __init__.py         # Stub — planned: RecursiveChunker
 │                           (respects CHUNK_SIZE + CHUNK_OVERLAP from Settings)
@@ -241,6 +242,13 @@ tests/
 │                              #   RuntimeError on converter failure (+ chaining),
 │                              #   empty-text fallback, ValueError for unsupported
 │                              #   extensions, converter not called on rejection
+│       └── normalizers/
+│           ├── __init__.py    # Package marker
+│           └── test_default.py
+│                              # 8 tests — protocol conformance, whitespace,
+│                              #   unicode (NFC), repeated blank lines,
+│                              #   section preservation, empty document handling,
+│                              #   deterministic output, line endings
 └── integration/               # Empty — integration tests added only when requested
 ```
 
@@ -279,7 +287,7 @@ tests/
 | Component                      | Location                                         |
 |--------------------------------|--------------------------------------------------|
 | `DoclingParser`                | ✅ implemented                                   |
-| `DefaultDocumentNormalizer`    | `infrastructure/normalizers/default.py`          |
+| `DefaultDocumentNormalizer`    | ✅ implemented                                   |
 | `RecursiveChunker`             | `infrastructure/chunkers/recursive.py`           |
 | `SentenceTransformerEmbedder`  | `infrastructure/embedders/sentence_transformer.py` |
 | `ChromaVectorStore`            | `infrastructure/storage/chroma.py`               |
