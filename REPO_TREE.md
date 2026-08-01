@@ -10,7 +10,7 @@
 
 ## Last updated
 
-**Commit 2 — "Add MetadataEnricher protocol"**  
+**Commit 4 — "Implement DoclingParser adapter"**  
 Local time: 2026-08-01 · Python ≥ 3.12.13 · uv · hatchling
 
 ---
@@ -46,11 +46,11 @@ Constructor injection throughout; single composition root (`bootstrap.py`).
 
 ## Current progress
 
-- Core scaffolding exists: `config.py`, `logging.py`, `bootstrap.py`, the CLI entrypoint, the domain entities/protocols, the metadata enricher protocol, and the filesystem loader.
-- Implemented dependency chain so far: `Settings` → `FileSystemLoader` → `Document`; `bootstrap()` resolves settings, configures logging, and returns `ApplicationContext`.
+- Core scaffolding exists: `config.py`, `logging.py`, `bootstrap.py`, the CLI entrypoint, the domain entities/protocols, the metadata enricher protocol, the filesystem loader, and the Docling parser adapter.
+- Implemented dependency chain so far: `Settings` → `FileSystemLoader` → `Document` → `DoclingParser` → `ParsedDocument`; `bootstrap()` resolves settings, configures logging, and returns `ApplicationContext`.
 - `interface/cli/main.py` already depends on `bootstrap()` and can print the active configuration with `--config`.
-- Application services and orchestrators are still stubs, so future ingestion features still need parser, normalizer, chunker, embedder, and vector store adapters before they can be wired end to end.
-- Existing tests currently anchor config, bootstrap, logging, domain entities/protocols, and filesystem loader behavior.
+- Application services and orchestrators are still stubs, so future ingestion features still need normalizer, chunker, embedder, and vector store adapters before they can be wired end to end.
+- Existing tests currently anchor config, bootstrap, logging, domain entities/protocols, filesystem loader behavior, and the Docling parser adapter.
 - For new features, keep the dependency order in mind: Domain stays dependency-free, Infrastructure plugs into Domain protocols, Application orchestrates, and Interface only composes through `bootstrap.py`.
 
 ---
@@ -166,8 +166,10 @@ infrastructure/
 │   └── filesystem.py       # FileSystemLoader — validates ext, reads bytes,
 │                           #   computes hash, produces Document; no parsing
 ├── parsers/
-│   └── __init__.py         # Stub — planned: DoclingParser
-│                           (wraps Docling, produces ParsedDocument)
+│   ├── __init__.py         # Exports DoclingParser
+│   └── docling_parser.py   # DoclingParser — wraps DocumentConverter,
+│                           #   implements Parser protocol, surfaces failures
+│                           #   as ValueError / RuntimeError with source path
 ├── normalizers/
 │   └── __init__.py         # Stub — planned: DefaultDocumentNormalizer
 │                           (whitespace, line endings, encoding artifacts)
@@ -222,13 +224,23 @@ tests/
 │   │                            7 protocols using in-module stubs
 │   └── infrastructure/
 │       ├── __init__.py        # Package marker
-│       └── loaders/
+│       ├── loaders/
+│       │   ├── __init__.py    # Package marker
+│       │   └── test_filesystem_loader.py
+│       │                      # 14 tests — protocol conformance, init config,
+│       │                      #   validation errors, happy-path loads, filtering,
+│       │                      #   hash correctness, case-insensitive ext matching,
+│       │                      #   empty files, frozen Document assertion
+│       └── parsers/
 │           ├── __init__.py    # Package marker
-│           └── test_filesystem_loader.py
-│                              # 14 tests — protocol conformance, init config,
-│                              #   validation errors, happy-path loads, filtering,
-│                              #   hash correctness, case-insensitive ext matching,
-│                              #   empty files, frozen Document assertion
+│           └── test_docling_parser.py
+│                              # 26 tests — protocol conformance, init config,
+│                              #   happy-path conversion, all 7 supported extensions,
+│                              #   metadata (title, num_pages) preservation,
+│                              #   title fallback, zero-page unpaginated formats,
+│                              #   RuntimeError on converter failure (+ chaining),
+│                              #   empty-text fallback, ValueError for unsupported
+│                              #   extensions, converter not called on rejection
 └── integration/               # Empty — integration tests added only when requested
 ```
 
@@ -260,18 +272,13 @@ tests/
 
 ---
 
-## Known file-naming quirk
 
-Infrastructure sub-packages use `__init.py` (missing one underscore), **not** `__init__.py`.
-This is a pre-existing pattern in the repo. Do not rename without a dedicated commit.
-
----
 
 ## What does NOT exist yet (next commits)
 
 | Component                      | Location                                         |
 |--------------------------------|--------------------------------------------------|
-| `DoclingParser`                | `infrastructure/parsers/docling_parser.py`       |
+| `DoclingParser`                | ✅ implemented                                   |
 | `DefaultDocumentNormalizer`    | `infrastructure/normalizers/default.py`          |
 | `RecursiveChunker`             | `infrastructure/chunkers/recursive.py`           |
 | `SentenceTransformerEmbedder`  | `infrastructure/embedders/sentence_transformer.py` |

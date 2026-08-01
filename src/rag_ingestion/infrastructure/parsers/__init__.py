@@ -46,4 +46,6 @@ Future support automatically benefits from Docling as additional document
 formats become available without requiring new parser implementations.
 """
 
-__all__: list[str] = []
+from rag_ingestion.infrastructure.parsers.docling_parser import DoclingParser
+
+__all__: list[str] = ["DoclingParser"]
