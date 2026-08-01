@@ -20,10 +20,6 @@ Non-responsibilities:
 - Metadata generation
 - Chunking
 
-Planned implementations:
-
-- FileSystemLoader
-
 Supported document types:
 
 - TXT
@@ -35,4 +31,6 @@ Supported document types:
 All content parsing is delegated to the Docling parser adapter.
 """
 
-__all__: list[str] = []
+from rag_ingestion.infrastructure.loaders.filesystem import FileSystemLoader
+
+__all__: list[str] = ["FileSystemLoader"]

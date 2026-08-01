@@ -19,4 +19,38 @@ No code in this package may depend on the Application, Infrastructure,
 or Interface layers.
 """
 
-__all__: list[str] = []
+from rag_ingestion.domain.entities import (
+    Chunk,
+    ChunkMetadata,
+    Document,
+    EmbeddedChunk,
+    NormalizedDocument,
+    ParsedDocument,
+)
+from rag_ingestion.domain.protocols import (
+    Chunker,
+    Embedder,
+    Loader,
+    MetadataEnricher,
+    Normalizer,
+    Parser,
+    VectorStore,
+)
+
+__all__ = [
+    # Entities
+    "Chunk",
+    "ChunkMetadata",
+    "Document",
+    "EmbeddedChunk",
+    "NormalizedDocument",
+    "ParsedDocument",
+    # Protocols
+    "Chunker",
+    "Embedder",
+    "Loader",
+    "MetadataEnricher",
+    "Normalizer",
+    "Parser",
+    "VectorStore",
+]
