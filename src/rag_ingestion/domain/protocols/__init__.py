@@ -15,6 +15,7 @@ Protocols:
 - ``Parser``      — extract structured text from a raw document.
 - ``Normalizer``  — clean and canonicalize parsed text.
 - ``Chunker``     — split normalized text into retrieval chunks.
+- ``MetadataEnricher`` — enrich chunk metadata before embedding.
 - ``Embedder``    — encode chunks as dense vectors.
 - ``VectorStore`` — persist and retrieve embedded chunks.
 """
