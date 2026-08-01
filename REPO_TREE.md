@@ -10,7 +10,7 @@
 
 ## Last updated
 
-**Commit 5 — "Implement DefaultDocumentNormalizer adapter"**  
+**Commit 6 — "Implement RecursiveChunker adapter"**  
 Local time: 2026-08-01 · Python ≥ 3.12.13 · uv · hatchling
 
 ---
@@ -175,8 +175,9 @@ infrastructure/
 │   └── default.py          # DefaultDocumentNormalizer — normalizes whitespace,
 │                           #   line endings, encoding, and extracts sections
 ├── chunkers/
-│   └── __init__.py         # Stub — planned: RecursiveChunker
-│                           (respects CHUNK_SIZE + CHUNK_OVERLAP from Settings)
+│   ├── __init__.py         # Exports RecursiveChunker
+│   └── recursive.py        # RecursiveChunker — chunker respecting CHUNK_SIZE
+│                           #   and CHUNK_OVERLAP, preserving sections
 ├── embedders/
 │   └── __init__.py         # Stub — planned: SentenceTransformerEmbedder
 │                           (loads model, batches, optionally normalizes vectors)
@@ -242,6 +243,12 @@ tests/
 │                              #   RuntimeError on converter failure (+ chaining),
 │                              #   empty-text fallback, ValueError for unsupported
 │                              #   extensions, converter not called on rejection
+│       ├── chunkers/
+│       │   ├── __init__.py    # Package marker
+│       │   └── test_recursive_chunker.py
+│       │                      # 7 tests — protocol conformance, configurable chunk size,
+│       │                      #   overlap, section preservation, deterministic IDs,
+│       │                      #   empty documents, recursive split
 │       └── normalizers/
 │           ├── __init__.py    # Package marker
 │           └── test_default.py
@@ -288,7 +295,7 @@ tests/
 |--------------------------------|--------------------------------------------------|
 | `DoclingParser`                | ✅ implemented                                   |
 | `DefaultDocumentNormalizer`    | ✅ implemented                                   |
-| `RecursiveChunker`             | `infrastructure/chunkers/recursive.py`           |
+| `RecursiveChunker`             | ✅ implemented                                   |
 | `SentenceTransformerEmbedder`  | `infrastructure/embedders/sentence_transformer.py` |
 | `ChromaVectorStore`            | `infrastructure/storage/chroma.py`               |
 | `IngestionOrchestrator`        | `application/orchestrators/ingestion.py`         |
