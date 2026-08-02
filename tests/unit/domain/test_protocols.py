@@ -227,8 +227,7 @@ class TestEmbedderContract:
             source_hash="d" * 64,
             size_bytes=300,
         )
-        parsed = ParsedDocument(source=doc, text="text", title="", num_pages=0)
-        normalized = NormalizedDocument(source=parsed, text="text")
+        _parsed = ParsedDocument(source=doc, text="text", title="", num_pages=0)
         meta = ChunkMetadata(
             document_hash=doc.source_hash,
             source_path=doc.source_path,

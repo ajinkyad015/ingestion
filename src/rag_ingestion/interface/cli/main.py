@@ -73,8 +73,33 @@ def main() -> int:
             source=target,
             embedding_model=context.settings.embedding_model,
         )
-        total_embedded = context.orchestrator.ingest(target)
-        print(f"Indexed {total_embedded} chunks from {target}")
+
+
+        result = context.orchestrator.ingest(target)
+
+        print(
+            f"""Ingestion completed.
+
+        Documents processed : {result.documents_processed}
+        Chunks created      : {result.chunks_created}
+        Embeddings created  : {result.embeddings_created}
+        Vectors written     : {result.vectors_written}
+        Failures            : {len(result.failures)}
+        Elapsed             : {result.elapsed_time_seconds:.2f}s
+        """
+        )       
+
+
+
+        if result.failures:
+            print("\nFailed documents:")
+
+            for failure in result.failures:
+                print(
+                    f"- {failure.document_path} "
+                    f"[{failure.stage}] "
+                    f"{failure.error}"
+                )
         return 0
 
     parser.print_help()

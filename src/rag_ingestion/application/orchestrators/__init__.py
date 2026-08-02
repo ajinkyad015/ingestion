@@ -28,6 +28,10 @@ The orchestrator will eventually coordinate the following pipeline:
 No orchestration logic should live in infrastructure adapters.
 """
 
-from rag_ingestion.application.orchestrators.ingestion import IngestionOrchestrator
+from rag_ingestion.application.orchestrators.ingestion import (
+    IngestionFailure,
+    IngestionOrchestrator,
+    IngestionResult,
+)
 
-__all__ = ["IngestionOrchestrator"]
+__all__ = ["IngestionFailure", "IngestionOrchestrator", "IngestionResult"]
