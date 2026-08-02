@@ -25,8 +25,7 @@ Non-responsibilities
 
 from __future__ import annotations
 
-from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Iterable, Protocol, cast
 
 from rag_ingestion.config import Settings
 from rag_ingestion.domain.entities.document import Document, ParsedDocument
@@ -36,12 +35,22 @@ if TYPE_CHECKING:
     # __init__ so that the class remains testable without Docling installed.
     pass
 
-from typing import Protocol
+class DoclingDocumentLike(Protocol):
+    def export_to_markdown(self) -> str: ...
+    meta: object | None
+    metadata: object | None
+    name: str | None
+    pages: Iterable[object] | None
+
+
+class ConversionResultLike(Protocol):
+    document: DoclingDocumentLike
 
 
 class _DocumentConverter(Protocol):
-    def convert(self, source: str) -> object:
+    def convert(self, source: str) -> ConversionResultLike:
         ...
+
 class DoclingParser:
     """
     Concrete ``Parser`` that delegates all extraction to Docling.
@@ -138,20 +147,22 @@ class DoclingParser:
             A ``docling.document_converter.DocumentConverter`` instance.
         """
         # Local import keeps Docling confined to the infrastructure layer.
-        from docling.document_converter import DocumentConverter  # type: ignore[import-untyped]
+        from docling.document_converter import DocumentConverter
 
         if enable_ocr:
-            from docling.datamodel.pipeline_options import PdfPipelineOptions  # type: ignore[import-untyped]
+            from docling.datamodel.pipeline_options import (
+                PdfPipelineOptions,
+            )
 
             pipeline_options = PdfPipelineOptions()
             pipeline_options.do_ocr = True
-            return DocumentConverter()
-        return DocumentConverter()
+            return cast(_DocumentConverter, DocumentConverter())
+        return cast(_DocumentConverter, DocumentConverter())
 
     @staticmethod
     def _build_parsed_document(
         document: Document,
-        result: object,
+        result: ConversionResultLike,
     ) -> ParsedDocument:
         """
         Map a Docling ``ConversionResult`` to a domain :class:`ParsedDocument`.
@@ -168,7 +179,7 @@ class DoclingParser:
         -------
         ParsedDocument
         """
-        doc_obj = result.document  # type: ignore[union-attr]
+        doc_obj = result.document
 
         # --- text -------------------------------------------------------
         # export_to_markdown() gives us structure-preserving text with

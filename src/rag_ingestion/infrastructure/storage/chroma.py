@@ -60,7 +60,7 @@ class ChromaVectorStore(VectorStore):
 
     def _build_client(self) -> Any:
         try:
-            import chromadb  # type: ignore[import-untyped]
+            import chromadb  
         except Exception as exc:  # pragma: no cover - exercised from runtime import failures
             raise RuntimeError("ChromaVectorStore requires chromadb to be installed.") from exc
 

@@ -1,8 +1,6 @@
 from pathlib import Path
 
 import pytest
-from pydantic import ValidationError
-
 from rag_ingestion.config import Settings
 from rag_ingestion.domain.entities.document import (
     Document,

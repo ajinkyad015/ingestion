@@ -13,12 +13,10 @@ from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import pytest
-
 from rag_ingestion.config import Settings
 from rag_ingestion.domain.entities.document import Document
 from rag_ingestion.domain.protocols.loader import Loader
 from rag_ingestion.infrastructure.loaders.filesystem import FileSystemLoader
-
 
 # ---------------------------------------------------------------------------
 # Helpers

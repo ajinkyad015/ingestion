@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
-
 from rag_ingestion.config import Settings
 from rag_ingestion.domain.entities.chunk import Chunk, ChunkMetadata
 from rag_ingestion.domain.protocols.metadata_enricher import MetadataEnricher
@@ -87,9 +86,9 @@ class TestDefaultMetadataEnricherEnrich:
 
     def test_attaches_metadata_and_preserves_existing_values(self) -> None:
         enricher = DefaultMetadataEnricher(_make_settings())
-        created_at = datetime(2026, 1, 2, 3, 4, 5, tzinfo=timezone.utc)
-        modified_at = datetime(2026, 1, 3, 4, 5, 6, tzinfo=timezone.utc)
-        accessed_at = datetime(2026, 1, 4, 5, 6, 7, tzinfo=timezone.utc)
+        created_at = datetime(2026, 1, 2, 3, 4, 5, tzinfo=UTC)
+        modified_at = datetime(2026, 1, 3, 4, 5, 6, tzinfo=UTC)
+        accessed_at = datetime(2026, 1, 4, 5, 6, 7, tzinfo=UTC)
         chunk = _make_chunk(
             source_path="/docs/annual-report.pdf",
             heading="Section A",
@@ -163,13 +162,13 @@ class TestDefaultMetadataEnricherEnrich:
 
         assert enriched.metadata.document_created_at == datetime.fromtimestamp(
             1_700_000_000,
-            tz=timezone.utc,
+            tz=UTC,
         )
         assert enriched.metadata.document_modified_at == datetime.fromtimestamp(
             1_700_000_100,
-            tz=timezone.utc,
+            tz=UTC,
         )
         assert enriched.metadata.document_accessed_at == datetime.fromtimestamp(
             1_700_000_200,
-            tz=timezone.utc,
+            tz=UTC,
         )

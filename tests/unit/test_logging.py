@@ -1,4 +1,3 @@
-import json
 
 from rag_ingestion.config import Settings
 from rag_ingestion.logging import configure_logging, get_logger

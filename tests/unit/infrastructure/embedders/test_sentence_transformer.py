@@ -4,10 +4,8 @@ from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import pytest
-
 from rag_ingestion.config import Settings
-from rag_ingestion.domain.entities.chunk import Chunk, ChunkMetadata
-from rag_ingestion.domain.entities.chunk import EmbeddedChunk
+from rag_ingestion.domain.entities.chunk import Chunk, ChunkMetadata, EmbeddedChunk
 from rag_ingestion.domain.protocols.embedder import Embedder
 from rag_ingestion.infrastructure.embedders.sentence_transformer import SentenceTransformerEmbedder
 

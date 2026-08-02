@@ -12,7 +12,6 @@ from rag_ingestion.domain.protocols.normalizer import Normalizer
 from rag_ingestion.domain.protocols.parser import Parser
 from rag_ingestion.domain.protocols.vector_store import VectorStore
 
-
 # ---------------------------------------------------------------------------
 # Minimal stub implementations that satisfy each protocol
 # ---------------------------------------------------------------------------

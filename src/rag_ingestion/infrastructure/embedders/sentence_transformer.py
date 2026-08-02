@@ -1,11 +1,13 @@
 from __future__ import annotations
 
 from collections.abc import Iterable
-from typing import Any
+from typing import Any, cast
+
 
 from rag_ingestion.config import Settings
 from rag_ingestion.domain.entities.chunk import Chunk, EmbeddedChunk
 from rag_ingestion.domain.protocols.embedder import Embedder
+
 
 
 class SentenceTransformerEmbedder(Embedder):
@@ -56,7 +58,7 @@ class SentenceTransformerEmbedder(Embedder):
 
     def _build_model(self) -> Any:
         try:
-            from sentence_transformers import SentenceTransformer  # type: ignore[import-untyped]
+            from sentence_transformers import SentenceTransformer  
         except Exception as exc:  # pragma: no cover - exercised from runtime import failures
             raise RuntimeError(
                 "SentenceTransformerEmbedder requires sentence-transformers to be installed."
@@ -113,7 +115,7 @@ class SentenceTransformerEmbedder(Embedder):
         return batch_embeddings
 
     @staticmethod
-    def _coerce_batch_embeddings(embeddings: object, expected_count: int) -> list[tuple[float, ...]]:
+    def _coerce_batch_embeddings(embeddings: Iterable[object], expected_count: int) -> list[tuple[float, ...]]:
         values = SentenceTransformerEmbedder._materialize_embeddings(embeddings)
 
         if values and SentenceTransformerEmbedder._looks_like_vector(values[0]):
@@ -125,20 +127,20 @@ class SentenceTransformerEmbedder(Embedder):
         return [SentenceTransformerEmbedder._coerce_vector(values)]
 
     @staticmethod
-    def _materialize_embeddings(embeddings: object) -> list[object]:
+    def _materialize_embeddings(embeddings: Iterable[object]) -> list[object]:
         try:
-            return list(embeddings)
+            return cast(list[object], list(embeddings))
         except TypeError as exc:
             raise RuntimeError("SentenceTransformerEmbedder received non-iterable embeddings.") from exc
 
     @staticmethod
     def _coerce_vector(vector: object) -> tuple[float, ...]:
         try:
-            values = list(vector)
+            values = list(cast(Iterable[object], vector))
         except TypeError as exc:
             raise RuntimeError("SentenceTransformerEmbedder received a non-iterable vector.") from exc
 
-        return tuple(float(value) for value in values)
+        return tuple(float(cast(Any, value)) for value in values)
 
     @staticmethod
     def _looks_like_vector(value: object) -> bool:

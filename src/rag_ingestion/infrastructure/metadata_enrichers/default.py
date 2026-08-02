@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import hashlib
 from dataclasses import replace
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 from rag_ingestion.config import Settings
@@ -149,7 +149,7 @@ class DefaultMetadataEnricher(MetadataEnricher):
     def _format_timestamp(value: datetime | None) -> str:
         if value is None:
             return ""
-        return value.astimezone(timezone.utc).isoformat()
+        return value.astimezone(UTC).isoformat()
 
     @staticmethod
     def _build_section_hierarchy(heading: str) -> tuple[str, ...]:
@@ -174,14 +174,14 @@ class DefaultMetadataEnricher(MetadataEnricher):
 
         resolved_created_at = created_at or datetime.fromtimestamp(
             getattr(stat_result, "st_birthtime", stat_result.st_ctime),
-            tz=timezone.utc,
+            tz=UTC,
         )
         resolved_modified_at = modified_at or datetime.fromtimestamp(
             stat_result.st_mtime,
-            tz=timezone.utc,
+            tz=UTC,
         )
         resolved_accessed_at = accessed_at or datetime.fromtimestamp(
             stat_result.st_atime,
-            tz=timezone.utc,
+            tz=UTC,
         )
         return resolved_created_at, resolved_modified_at, resolved_accessed_at

@@ -3,10 +3,8 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
-
 from rag_ingestion.domain.entities.chunk import Chunk, ChunkMetadata, EmbeddedChunk
 from rag_ingestion.domain.entities.document import Document, NormalizedDocument, ParsedDocument
-
 
 # ---------------------------------------------------------------------------
 # Helpers

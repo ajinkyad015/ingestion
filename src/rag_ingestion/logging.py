@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import logging
+from typing import cast
+from structlog.stdlib import BoundLogger
 import sys
 from typing import Any
 
@@ -63,9 +65,10 @@ def get_logger(**context: Any) -> structlog.stdlib.BoundLogger:
     structlog.stdlib.BoundLogger
         Configured structured logger.
     """
-    logger = structlog.get_logger()
-
+    logger = cast(BoundLogger, structlog.get_logger())
+    
     if context:
-        logger = logger.bind(**context)
+        return logger.bind(**context)
+    
 
     return logger

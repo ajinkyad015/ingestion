@@ -87,7 +87,7 @@ class RecursiveChunker(Chunker):
         Finds section boundaries in the full normalized text.
         Returns a list of (heading, section_text, char_start, char_end).
         """
-        blocks = []
+        blocks: list[tuple[str, str, int, int]] = []
         if not text:
             return blocks
             
@@ -153,8 +153,8 @@ class RecursiveChunker(Chunker):
             splits_with_offsets.append((s, current_off))
             current_off += len(s) + len(separator)
             
-        chunks = []
-        current_splits = []
+        chunks: list[tuple[str, int, int]] = []
+        current_splits: list[tuple[str, int]] = []
         current_len = 0
         
         for s_text, s_off in splits_with_offsets:
@@ -167,7 +167,7 @@ class RecursiveChunker(Chunker):
                 elif chunk_str.strip():
                     chunks.append((chunk_str, chunk_start, chunk_start + len(chunk_str)))
                     
-                overlap_splits = []
+                overlap_splits: list[tuple[str, int]] = []
                 overlap_len = 0
                 for xs_text, xs_off in reversed(current_splits):
                     addition = len(xs_text) if overlap_len == 0 else len(separator) + len(xs_text)

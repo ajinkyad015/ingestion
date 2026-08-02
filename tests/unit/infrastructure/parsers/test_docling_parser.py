@@ -22,12 +22,10 @@ from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import pytest
-
 from rag_ingestion.config import Settings
 from rag_ingestion.domain.entities.document import Document, ParsedDocument
 from rag_ingestion.domain.protocols.parser import Parser
 from rag_ingestion.infrastructure.parsers.docling_parser import DoclingParser
-
 
 # ---------------------------------------------------------------------------
 # Shared helpers
