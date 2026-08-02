@@ -2,9 +2,13 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
+
 from rag_ingestion.application.orchestrators.ingestion import IngestionOrchestrator
 from rag_ingestion.domain.entities.chunk import Chunk, ChunkMetadata, EmbeddedChunk
 from rag_ingestion.domain.entities.document import Document, NormalizedDocument, ParsedDocument
+from rag_ingestion.domain.protocols import chunker, embedder, loader
+    
 
 
 class _StubLoader:
@@ -58,6 +62,8 @@ class _StubChunker:
             char_end=len(document.text),
         )
         return [Chunk(chunk_id="abc123_000000", text=document.text, metadata=metadata)]
+
+
 
 
 class _StubMetadataEnricher:
@@ -122,3 +128,125 @@ class TestIngestionOrchestrator:
         assert len(embedder.calls) == 1
         assert len(vector_store.calls) == 1
         assert vector_store.calls[0][0].chunk.text == "parsed text"
+
+
+
+    def test_ingest_returns_zero_when_loader_finds_no_documents(self) -> None:
+        loader = _StubLoader()
+        loader.load = lambda _: []
+
+        parser = _StubParser()
+        normalizer = _StubNormalizer()
+        chunker = _StubChunker()
+        metadata_enricher = _StubMetadataEnricher()
+        embedder = _StubEmbedder()
+        vector_store = _StubVectorStore()
+
+        orchestrator = IngestionOrchestrator(
+            loader=loader,
+            parser=parser,
+            normalizer=normalizer,
+            chunker=chunker,
+            metadata_enricher=metadata_enricher,
+            embedder=embedder,
+            vector_store=vector_store,
+        )
+
+        assert orchestrator.ingest("/tmp/docs") == 0
+
+        assert parser.calls == []
+        assert normalizer.calls == []
+        assert chunker.calls == []
+        assert metadata_enricher.calls == []
+        assert embedder.calls == []
+        assert vector_store.calls == []
+
+    def test_ingest_skips_embedding_when_chunker_returns_no_chunks(self) -> None:
+        loader = _StubLoader()
+        parser = _StubParser()
+        normalizer = _StubNormalizer()
+
+        chunker = _StubChunker()
+        chunker.chunk = lambda _: []
+
+        metadata_enricher = _StubMetadataEnricher()
+        embedder = _StubEmbedder()
+        vector_store = _StubVectorStore()
+
+        orchestrator = IngestionOrchestrator(
+            loader=loader,
+            parser=parser,
+            normalizer=normalizer,
+            chunker=chunker,
+            metadata_enricher=metadata_enricher,
+            embedder=embedder,
+            vector_store=vector_store,
+        )
+
+        assert orchestrator.ingest("/tmp/docs") == 0
+
+        assert metadata_enricher.calls == []
+        assert embedder.calls == []
+        assert vector_store.calls == []
+
+
+    def test_ingest_processes_multiple_documents(self) -> None:
+        loader = _StubLoader()
+
+        doc1 = loader.load("/tmp/docs")[0]
+        doc2 = Document(
+            source_path=Path("/tmp/docs/b.txt"),
+            extension=".txt",
+            source_hash="def456",
+            size_bytes=2,
+        )
+
+        loader.load = lambda _: [doc1, doc2]
+
+        parser = _StubParser()
+        normalizer = _StubNormalizer()
+        chunker = _StubChunker()
+        metadata_enricher = _StubMetadataEnricher()
+        embedder = _StubEmbedder()
+        vector_store = _StubVectorStore()
+
+        orchestrator = IngestionOrchestrator(
+            loader=loader,
+            parser=parser,
+            normalizer=normalizer,
+            chunker=chunker,
+            metadata_enricher=metadata_enricher,
+            embedder=embedder,
+            vector_store=vector_store,
+        )
+
+        assert orchestrator.ingest("/tmp/docs") == 2
+
+        assert len(parser.calls) == 2
+        assert len(normalizer.calls) == 2
+        assert len(chunker.calls) == 2
+        assert len(metadata_enricher.calls) == 2
+        assert len(embedder.calls) == 2
+        assert len(vector_store.calls) == 2
+
+
+    def test_ingest_propagates_parser_errors(self) -> None:
+        loader = _StubLoader()
+
+
+        class FailingParser(_StubParser):
+            def parse(self, document):
+                raise RuntimeError("parse failed")
+
+        orchestrator = IngestionOrchestrator(
+            loader=loader,
+            parser=FailingParser(),
+            normalizer=_StubNormalizer(),
+            chunker=_StubChunker(),
+            metadata_enricher=_StubMetadataEnricher(),
+            embedder=_StubEmbedder(),
+            vector_store=_StubVectorStore(),
+        )
+
+        with pytest.raises(RuntimeError, match="parse failed"):
+            orchestrator.ingest("/tmp/docs")
