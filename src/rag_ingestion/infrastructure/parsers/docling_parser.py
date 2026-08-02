@@ -25,7 +25,8 @@ Non-responsibilities
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Iterable, Protocol, cast
+from collections.abc import Iterable
+from typing import TYPE_CHECKING, Protocol, cast
 
 from rag_ingestion.config import Settings
 from rag_ingestion.domain.entities.document import Document, ParsedDocument

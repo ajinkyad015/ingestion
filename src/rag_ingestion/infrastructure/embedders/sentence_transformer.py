@@ -3,11 +3,9 @@ from __future__ import annotations
 from collections.abc import Iterable
 from typing import Any, cast
 
-
 from rag_ingestion.config import Settings
 from rag_ingestion.domain.entities.chunk import Chunk, EmbeddedChunk
 from rag_ingestion.domain.protocols.embedder import Embedder
-
 
 
 class SentenceTransformerEmbedder(Embedder):
@@ -58,7 +56,7 @@ class SentenceTransformerEmbedder(Embedder):
 
     def _build_model(self) -> Any:
         try:
-            from sentence_transformers import SentenceTransformer  
+            from sentence_transformers import SentenceTransformer
         except Exception as exc:  # pragma: no cover - exercised from runtime import failures
             raise RuntimeError(
                 "SentenceTransformerEmbedder requires sentence-transformers to be installed."
@@ -78,7 +76,10 @@ class SentenceTransformerEmbedder(Embedder):
     def _embed_chunks(self, model: Any, chunks: list[Chunk]) -> list[tuple[float, ...]]:
         embeddings: list[tuple[float, ...]] = []
 
-        for batch_number, start_index in enumerate(range(0, len(chunks), self._batch_size), start=1):
+        for batch_number, start_index in enumerate(range(0, len(chunks), 
+                                                         self._batch_size), 
+                                                         start=1
+                                                    ):
             batch_chunks = chunks[start_index : start_index + self._batch_size]
             batch_embeddings = self._encode_batch(model, batch_chunks, batch_number)
             embeddings.extend(batch_embeddings)
@@ -115,7 +116,8 @@ class SentenceTransformerEmbedder(Embedder):
         return batch_embeddings
 
     @staticmethod
-    def _coerce_batch_embeddings(embeddings: Iterable[object], expected_count: int) -> list[tuple[float, ...]]:
+    def _coerce_batch_embeddings(embeddings: Iterable[object],
+                                  expected_count: int) -> list[tuple[float, ...]]:
         values = SentenceTransformerEmbedder._materialize_embeddings(embeddings)
 
         if values and SentenceTransformerEmbedder._looks_like_vector(values[0]):
@@ -131,17 +133,19 @@ class SentenceTransformerEmbedder(Embedder):
         try:
             return cast(list[object], list(embeddings))
         except TypeError as exc:
-            raise RuntimeError("SentenceTransformerEmbedder received non-iterable embeddings.") from exc
+            raise RuntimeError("SentenceTransformerEmbedder " \
+            "received non-iterable embeddings.") from exc
 
     @staticmethod
     def _coerce_vector(vector: object) -> tuple[float, ...]:
         try:
             values = list(cast(Iterable[object], vector))
         except TypeError as exc:
-            raise RuntimeError("SentenceTransformerEmbedder received a non-iterable vector.") from exc
+            raise RuntimeError("SentenceTransformerEmbedder " \
+            "received a non-iterable vector.") from exc
 
         return tuple(float(cast(Any, value)) for value in values)
 
     @staticmethod
     def _looks_like_vector(value: object) -> bool:
-        return isinstance(value, Iterable) and not isinstance(value, (str, bytes))
+        return isinstance(value, Iterable) and not isinstance(value, str | bytes)

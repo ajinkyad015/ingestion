@@ -118,8 +118,7 @@ def test_recursive_split_oversized_section(sample_parsed_document):
     
     assert len(chunks) > 1
     
-    # Reconstruct text by ensuring every character is covered
-    reconstructed_text = ""
+    
     for chunk in chunks:
         assert len(chunk.text) <= 64
         assert chunk.metadata.heading == "Big Section"

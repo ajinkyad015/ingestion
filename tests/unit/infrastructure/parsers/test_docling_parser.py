@@ -193,7 +193,15 @@ class TestDoclingParserParse:
 
         assert parsed.text == expected_text
 
-    @pytest.mark.parametrize("extension", [".pdf", ".docx", ".txt", ".md", ".markdown", ".html", ".htm"])
+    @pytest.mark.parametrize("extension", [".pdf",
+                                            ".docx", 
+                                            ".txt", 
+                                            ".md", 
+                                            ".markdown", 
+                                            ".html", 
+                                            ".htm"
+                                        ]
+                            )
     def test_all_supported_extensions_parse_successfully(self, extension: str) -> None:
         settings = _make_settings()
         document = _make_document(path=f"/docs/file{extension}", extension=extension)

@@ -163,7 +163,11 @@ class RecursiveChunker(Chunker):
                 chunk_start = current_splits[0][1]
                 
                 if len(chunk_str) > chunk_size and new_separators:
-                    chunks.extend(self._split_text(chunk_str, chunk_start, chunk_size, chunk_overlap, new_separators))
+                    chunks.extend(self._split_text(chunk_str, 
+                                                   chunk_start, 
+                                                   chunk_size, 
+                                                   chunk_overlap, 
+                                                   new_separators))
                 elif chunk_str.strip():
                     chunks.append((chunk_str, chunk_start, chunk_start + len(chunk_str)))
                     
@@ -178,7 +182,15 @@ class RecursiveChunker(Chunker):
                     
                 current_splits = overlap_splits
                 current_splits.append((s_text, s_off))
-                current_len = overlap_len + len(s_text) if overlap_len == 0 else overlap_len + len(separator) + len(s_text)
+                current_len = overlap_len + len(s_text)
+                if overlap_len == 0:
+                    current_len = overlap_len + len(s_text)
+                else:
+                    current_len = (
+                        overlap_len
+                        + len(separator)
+                        + len(s_text)
+                    )
             else:
                 current_splits.append((s_text, s_off))
                 current_len += len(s_text) if current_len == 0 else len(separator) + len(s_text)
@@ -187,7 +199,13 @@ class RecursiveChunker(Chunker):
             chunk_str = separator.join([x[0] for x in current_splits])
             chunk_start = current_splits[0][1]
             if len(chunk_str) > chunk_size and new_separators:
-                chunks.extend(self._split_text(chunk_str, chunk_start, chunk_size, chunk_overlap, new_separators))
+                chunks.extend(self._split_text(chunk_str, 
+                                               chunk_start, 
+                                               chunk_size, 
+                                               chunk_overlap,
+                                                new_separators
+                                                )
+                            )
             elif chunk_str.strip():
                 chunks.append((chunk_str, chunk_start, chunk_start + len(chunk_str)))
                 

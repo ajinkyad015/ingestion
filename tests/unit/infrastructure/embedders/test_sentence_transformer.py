@@ -93,7 +93,11 @@ class TestSentenceTransformerEmbedderEmbed:
         assert result == []
 
     def test_model_initialization_comes_from_settings(self) -> None:
-        settings = _make_settings(model="custom-model", batch_size=3, device="cuda:0", normalize=True)
+        settings = _make_settings(model="custom-model", 
+                                  batch_size=3, 
+                                  device="cuda:0", 
+                                  normalize=True
+                                  )
         embedder = SentenceTransformerEmbedder(settings)
         chunks = [_make_chunk("hello")]
         model = _make_model([[0.1, 0.2, 0.3]])
@@ -189,8 +193,12 @@ class TestSentenceTransformerEmbedderEmbed:
     def test_load_failure_raises_runtime_error_with_context(self) -> None:
         embedder = SentenceTransformerEmbedder(_make_settings(model="broken-model", device="cpu"))
 
-        with patch("sentence_transformers.SentenceTransformer", side_effect=ValueError("load failed")):
-            with pytest.raises(RuntimeError, match="failed to load model 'broken-model'.*'cpu'") as excinfo:
+        with patch("sentence_transformers.SentenceTransformer", 
+                   side_effect=ValueError("load failed")
+                   ):
+            with pytest.raises(RuntimeError,
+                                match="failed to load model 'broken-model'.*'cpu'"
+                                ) as excinfo:
                 embedder.embed([_make_chunk("x")])
 
         assert isinstance(excinfo.value.__cause__, ValueError)

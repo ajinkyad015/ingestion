@@ -1,12 +1,11 @@
 from __future__ import annotations
 
 import logging
-from typing import cast
-from structlog.stdlib import BoundLogger
 import sys
-from typing import Any
+from typing import Any, cast
 
 import structlog
+from structlog.stdlib import BoundLogger
 
 from rag_ingestion.config import Settings
 
