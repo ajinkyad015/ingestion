@@ -28,4 +28,6 @@ The orchestrator will eventually coordinate the following pipeline:
 No orchestration logic should live in infrastructure adapters.
 """
 
-__all__: list[str] = []
+from rag_ingestion.application.orchestrators.ingestion import IngestionOrchestrator
+
+__all__ = ["IngestionOrchestrator"]

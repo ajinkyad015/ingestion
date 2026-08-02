@@ -46,4 +46,6 @@ The embedding implementation should be replaceable without modifying
 application services or orchestrators.
 """
 
-__all__: list[str] = []
+from rag_ingestion.infrastructure.embedders.sentence_transformer import SentenceTransformerEmbedder
+
+__all__ = ["SentenceTransformerEmbedder"]

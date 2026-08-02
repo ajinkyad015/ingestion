@@ -2,7 +2,15 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from rag_ingestion.application.orchestrators.ingestion import IngestionOrchestrator
 from rag_ingestion.config import Settings, get_settings
+from rag_ingestion.infrastructure.chunkers.recursive import RecursiveChunker
+from rag_ingestion.infrastructure.embedders.sentence_transformer import SentenceTransformerEmbedder
+from rag_ingestion.infrastructure.loaders.filesystem import FileSystemLoader
+from rag_ingestion.infrastructure.metadata_enrichers.default import DefaultMetadataEnricher
+from rag_ingestion.infrastructure.normalizers.default import DefaultDocumentNormalizer
+from rag_ingestion.infrastructure.parsers.docling_parser import DoclingParser
+from rag_ingestion.infrastructure.storage.chroma import ChromaVectorStore
 from rag_ingestion.logging import configure_logging, get_logger
 
 
@@ -17,6 +25,14 @@ class ApplicationContext:
     """
 
     settings: Settings
+    loader: FileSystemLoader
+    parser: DoclingParser
+    normalizer: DefaultDocumentNormalizer
+    chunker: RecursiveChunker
+    metadata_enricher: DefaultMetadataEnricher
+    embedder: SentenceTransformerEmbedder
+    vector_store: ChromaVectorStore
+    orchestrator: IngestionOrchestrator
 
 
 def bootstrap() -> ApplicationContext:
@@ -38,6 +54,23 @@ def bootstrap() -> ApplicationContext:
 
     logger = get_logger(component="bootstrap")
 
+    loader = FileSystemLoader(settings)
+    parser = DoclingParser(settings)
+    normalizer = DefaultDocumentNormalizer()
+    chunker = RecursiveChunker(settings)
+    metadata_enricher = DefaultMetadataEnricher(settings)
+    embedder = SentenceTransformerEmbedder(settings)
+    vector_store = ChromaVectorStore(settings)
+    orchestrator = IngestionOrchestrator(
+        loader=loader,
+        parser=parser,
+        normalizer=normalizer,
+        chunker=chunker,
+        metadata_enricher=metadata_enricher,
+        embedder=embedder,
+        vector_store=vector_store,
+    )
+
     logger.info(
         "application_bootstrapped",
         app_name=settings.app_name,
@@ -47,4 +80,12 @@ def bootstrap() -> ApplicationContext:
 
     return ApplicationContext(
         settings=settings,
+        loader=loader,
+        parser=parser,
+        normalizer=normalizer,
+        chunker=chunker,
+        metadata_enricher=metadata_enricher,
+        embedder=embedder,
+        vector_store=vector_store,
+        orchestrator=orchestrator,
     )

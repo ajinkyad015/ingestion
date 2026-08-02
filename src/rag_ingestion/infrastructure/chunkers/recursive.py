@@ -39,7 +39,7 @@ class RecursiveChunker(Chunker):
 
         # Generate all raw splits with offsets
         raw_chunks = []
-        for heading, section_text, start_offset, end_offset in section_blocks:
+        for heading, section_text, start_offset, _end_offset in section_blocks:
             if not section_text.strip():
                 continue
                 

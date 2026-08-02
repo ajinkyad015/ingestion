@@ -52,4 +52,6 @@ These implementations should satisfy the same VectorStore protocol,
 allowing the application layer to remain unchanged.
 """
 
-__all__: list[str] = []
+from rag_ingestion.infrastructure.storage.chroma import ChromaVectorStore
+
+__all__ = ["ChromaVectorStore"]

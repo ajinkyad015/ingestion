@@ -29,6 +29,15 @@ def build_parser() -> argparse.ArgumentParser:
         help="Display the active configuration.",
     )
 
+    subparsers = parser.add_subparsers(dest="command")
+    ingest_parser = subparsers.add_parser("ingest", help="Ingest documents from a directory")
+    ingest_parser.add_argument(
+        "source",
+        nargs="?",
+        default=None,
+        help="Path to the input directory to ingest.",
+    )
+
     return parser
 
 
@@ -55,6 +64,17 @@ def main() -> int:
         )
 
         print(context.settings.model_dump_json(indent=2))
+        return 0
+
+    if args.command == "ingest":
+        target = args.source or str(context.settings.default_input_directory)
+        logger.info(
+            "ingestion_started",
+            source=target,
+            embedding_model=context.settings.embedding_model,
+        )
+        total_embedded = context.orchestrator.ingest(target)
+        print(f"Indexed {total_embedded} chunks from {target}")
         return 0
 
     parser.print_help()
