@@ -36,7 +36,12 @@ if TYPE_CHECKING:
     # __init__ so that the class remains testable without Docling installed.
     pass
 
+from typing import Protocol
 
+
+class _DocumentConverter(Protocol):
+    def convert(self, source: str) -> object:
+        ...
 class DoclingParser:
     """
     Concrete ``Parser`` that delegates all extraction to Docling.
@@ -114,7 +119,7 @@ class DoclingParser:
     # ------------------------------------------------------------------
 
     @staticmethod
-    def _build_converter(enable_ocr: bool) -> object:
+    def _build_converter(enable_ocr: bool) -> _DocumentConverter:
         """
         Instantiate and return a ``DocumentConverter``.
 
@@ -129,7 +134,7 @@ class DoclingParser:
 
         Returns
         -------
-        object
+        _DocumentConverter
             A ``docling.document_converter.DocumentConverter`` instance.
         """
         # Local import keeps Docling confined to the infrastructure layer.

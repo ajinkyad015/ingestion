@@ -10,7 +10,7 @@
 
 ## Last updated
 
-**Commit 6 — "Implement RecursiveChunker adapter"**  
+**Commit 7 — "Implement DefaultMetadataEnricher adapter"**  
 Local time: 2026-08-01 · Python ≥ 3.12.13 · uv · hatchling
 
 ---
@@ -46,10 +46,10 @@ Constructor injection throughout; single composition root (`bootstrap.py`).
 
 ## Current progress
 
-- Core scaffolding exists: `config.py`, `logging.py`, `bootstrap.py`, the CLI entrypoint, the domain entities/protocols, the metadata enricher protocol, the filesystem loader, the Docling parser adapter, and the default document normalizer.
-- Implemented dependency chain so far: `Settings` → `FileSystemLoader` → `Document` → `DoclingParser` → `ParsedDocument` → `DefaultDocumentNormalizer` → `NormalizedDocument`; `bootstrap()` resolves settings, configures logging, and returns `ApplicationContext`.
+- Core scaffolding exists: `config.py`, `logging.py`, `bootstrap.py`, the CLI entrypoint, the domain entities/protocols, the metadata enricher protocol and adapter, the filesystem loader, the Docling parser adapter, and the default document normalizer.
+- Implemented dependency chain so far: `Settings` → `FileSystemLoader` → `Document` → `DoclingParser` → `ParsedDocument` → `DefaultDocumentNormalizer` → `NormalizedDocument` → `DefaultMetadataEnricher`; `bootstrap()` resolves settings, configures logging, and returns `ApplicationContext`.
 - `interface/cli/main.py` already depends on `bootstrap()` and can print the active configuration with `--config`.
-- Application services and orchestrators are still stubs, so future ingestion features still need normalizer, chunker, embedder, and vector store adapters before they can be wired end to end.
+- Application services and orchestrators are still stubs, so future ingestion features still need  embedder, and vector store adapters before they can be wired end to end.
 - Existing tests currently anchor config, bootstrap, logging, domain entities/protocols, filesystem loader behavior, and the Docling parser adapter.
 - For new features, keep the dependency order in mind: Domain stays dependency-free, Infrastructure plugs into Domain protocols, Application orchestrates, and Interface only composes through `bootstrap.py`.
 
@@ -174,6 +174,11 @@ infrastructure/
 │   ├── __init__.py         # Exports DefaultDocumentNormalizer
 │   └── default.py          # DefaultDocumentNormalizer — normalizes whitespace,
 │                           #   line endings, encoding, and extracts sections
+├── metadata_enrichers/
+│   ├── __init__.py         # Exports DefaultMetadataEnricher
+│   └── default.py          # DefaultMetadataEnricher — adds deterministic
+│                           #   document/chunk hashes, timestamps, titles,
+│                           #   source file names, and section hierarchy
 ├── chunkers/
 │   ├── __init__.py         # Exports RecursiveChunker
 │   └── recursive.py        # RecursiveChunker — chunker respecting CHUNK_SIZE
@@ -249,6 +254,10 @@ tests/
 │       │                      # 7 tests — protocol conformance, configurable chunk size,
 │       │                      #   overlap, section preservation, deterministic IDs,
 │       │                      #   empty documents, recursive split
+│       ├── metadata_enrichers/
+│       │   └── test_default.py
+│       │                      # 7 tests — protocol conformance, deterministic hashes,
+│       │                      #   metadata preservation, ordering, timestamp fallback
 │       └── normalizers/
 │           ├── __init__.py    # Package marker
 │           └── test_default.py

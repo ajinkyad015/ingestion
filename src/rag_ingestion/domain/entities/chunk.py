@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from datetime import datetime
 from pathlib import Path
 
 
@@ -31,6 +32,21 @@ class ChunkMetadata:
     char_end:
         Character offset within the normalized document text where this
         chunk ends (exclusive).
+    source_file:
+        Base filename of the originating source document.
+    section_hierarchy:
+        Ordered section path for this chunk. Empty when no heading structure
+        is available.
+    title:
+        Document title associated with this chunk.
+    document_created_at:
+        Source document creation timestamp when available.
+    document_modified_at:
+        Source document last-modified timestamp when available.
+    document_accessed_at:
+        Source document last-accessed timestamp when available.
+    chunk_hash:
+        Deterministic hash for this specific chunk after metadata enrichment.
     """
 
     document_hash: str
@@ -41,6 +57,13 @@ class ChunkMetadata:
     page_number: int
     char_start: int
     char_end: int
+    source_file: str = ""
+    section_hierarchy: tuple[str, ...] = field(default_factory=tuple)
+    title: str = ""
+    document_created_at: datetime | None = None
+    document_modified_at: datetime | None = None
+    document_accessed_at: datetime | None = None
+    chunk_hash: str = ""
 
 
 @dataclass(frozen=True, slots=True)
