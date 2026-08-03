@@ -100,7 +100,7 @@ class Settings(BaseSettings):
     # Embeddings
     #
     embedding_model: str = Field(
-        default="BAAI/bge-small-en-v1.5",
+        default="sentence-transformers/all-MiniLM-L6-v2",
         alias="EMBEDDING_MODEL",
     )
 

@@ -4,7 +4,7 @@ from rag_ingestion.config import Settings
 def test_default_embedding_model() -> None:
     settings = Settings()
 
-    assert settings.embedding_model == "BAAI/bge-small-en-v1.5"
+    assert settings.embedding_model == "sentence-transformers/all-MiniLM-L6-v2"
 
 
 def test_supported_extensions_are_normalized() -> None:

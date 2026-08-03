@@ -18,5 +18,5 @@ def test_bootstrap_contains_settings() -> None:
     context = bootstrap()
 
     assert context.settings.app_name == "rag-ingestion"
-    assert context.settings.embedding_model == "BAAI/bge-small-en-v1.5"
+    assert context.settings.embedding_model == "sentence-transformers/all-MiniLM-L6-v2"
     assert context.settings.chunk_size == 512

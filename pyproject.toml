@@ -30,6 +30,9 @@ dependencies = [
     "pydantic-settings>=2.4.0,<3.0.0",
     "structlog>=24.2.0,<25.0.0",
     "pytest>=8.4.2",
+    "reportlab>=5.0.0",
+    "transformers>=4.51.3",
+    "hf-xet>=1.5.2",
 ]
 
 [project.optional-dependencies]
