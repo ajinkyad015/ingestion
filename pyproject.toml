@@ -33,6 +33,7 @@ dependencies = [
     "reportlab>=5.0.0",
     "transformers>=4.51.3",
     "hf-xet>=1.5.2",
+    "rich>=13.0,<15.0",
 ]
 
 [project.optional-dependencies]

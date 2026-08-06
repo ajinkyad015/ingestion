@@ -56,7 +56,11 @@ ChromaDB Vector Store
 rag-ingestion/
 ├── pyproject.toml
 ├── README.md
+├── REPO_TREE.md
 ├── .env.example
+├── docs/
+│   ├── INSTRUCTIONS.md
+│   └── REPO_TREE.md
 ├── src/
 │   └── rag_ingestion/
 │       ├── application/

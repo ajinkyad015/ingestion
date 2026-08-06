@@ -68,6 +68,11 @@ class Settings(BaseSettings):
         alias="LOG_FORMAT",
     )
 
+    log_directory: Path = Field(
+        default=Path("./logs"),
+        alias="LOG_DIRECTORY",
+    )
+
     #
     # Loader
     #
