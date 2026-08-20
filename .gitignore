@@ -3,6 +3,8 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+.docs/
+docs/
 # Compiled extensions
 *.so
 *.dylib

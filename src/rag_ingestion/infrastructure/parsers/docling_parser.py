@@ -156,7 +156,7 @@ class DoclingParser:
             )
 
             pipeline_options = PdfPipelineOptions()
-            pipeline_options.do_ocr = True
+            pipeline_options.do_ocr = False  # Docling's OCR is slow; only enable if requested
             return cast(_DocumentConverter, DocumentConverter())
         return cast(_DocumentConverter, DocumentConverter())
 
