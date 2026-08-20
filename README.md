@@ -39,7 +39,7 @@ Parsing is delegated to [Docling](https://github.com/docling-project/docling), e
 |---|---|
 | **Architecture** | Clean Architecture — Domain → Application → Infrastructure → Interface |
 | **Pipeline** | 7 stages: Load → Parse → Normalize → Chunk → Enrich → Embed → Store |
-| **Test suite** | 182 test functions, ~3,460 lines — more test code than source (~2,960 lines) |
+| **Test suite** |  test functions,  |
 | **Type safety** | Fully annotated, enforced with `mypy --strict` |
 | **Formats supported** | PDF · DOCX · TXT · Markdown · HTML |
 | **Extensibility** | Every stage is a `Protocol` — swap any adapter without touching the orchestrator |
