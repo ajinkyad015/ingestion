@@ -282,18 +282,6 @@ uv run mypy src          # strict type checking
 - [ ] Additional vector store adapters
 - [ ] Additional embedding providers
 
-## Contributing
-
-Contributions are welcome. Before opening a pull request:
-
-```bash
-uv run ruff check . && uv run ruff format --check . && uv run mypy src && uv run pytest
-```
-
-1. Fork the repository and create a feature branch.
-2. Make your changes, respecting the existing Clean Architecture boundaries — domain code never imports infrastructure.
-3. Add or update tests: new adapters need a unit test with a stub double and, where relevant, integration coverage.
-4. Open a pull request with a clear description of the change.
 
 ## License
 
