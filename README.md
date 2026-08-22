@@ -273,9 +273,6 @@ uv run mypy src          # strict type checking
 - [x] PDF, DOCX, TXT, Markdown, and HTML ingestion via Docling
 - [x] Deterministic recursive chunking with provenance tracking
 - [x] ChromaDB persistence with content-addressable upserts
-- [ ] PPTX support
-- [ ] XLSX support
-- [ ] CSV support
 - [ ] Email ingestion
 - [ ] Hybrid retrieval (dense + sparse)
 - [ ] Reranking
@@ -286,9 +283,3 @@ uv run mypy src          # strict type checking
 ## License
 
 Licensed under the MIT License — see [LICENSE](LICENSE) for details.
-
-## Author
-
-**[Your Name]**
-
-[GitHub](https://github.com/your-username) · [LinkedIn](https://linkedin.com/in/your-username) · [your.email@example.com](mailto:your.email@example.com)
